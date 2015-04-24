@@ -61,6 +61,7 @@ delimiter = ' '
 separator = '' #default to whatever sqlite defaults to
 mode = 'list'
 columns = ''
+cols = ''
 key_columns = ''
 offset_head = 0
 max_rows = 0
@@ -177,6 +178,7 @@ if args.key_columns:
     key_columns = [x.strip() for x in args.key_columns.split(',')]
 if args.columns:
     columns = [x.strip() for x in args.columns.split(',')]
+    cols = args.columns
 if args.offset_head:
     offset_head = args.offset_head
 if args.queryfile:
@@ -366,7 +368,10 @@ if args.offset_tail and int(args.offset_tail) > 0: #remove all the entries from 
 
 if max_count > 0:
     #execute inserts, fill table with row data
-    c.executemany('insert into '+table_name+' values ('+placeholder_str+')', inserts)
+    if len(cols) > 0:
+        c.executemany('insert into '+table_name+'('+cols+') values ('+placeholder_str+')', inserts)
+    else:
+        c.executemany('insert into '+table_name+' values ('+placeholder_str+')', inserts)
     conn.commit()
 
 
